@@ -13,6 +13,9 @@
 #define BUILD_DIR "./build/"
 #define SRC_DIR "./src/"
 
+#define FLAGS
+
+File_Paths src_paths = {0};
 Cmd build_cmd = {0};
 Cmd run_cmd = {0};
 
@@ -30,11 +33,23 @@ int main(int argc, char **argv) {
     return 1;
   }
 
+  if (!read_entire_dir(SRC_DIR, &src_paths))
+    return 1;
+
   // Build
   nob_cc(&build_cmd);
   nob_cc_flags(&build_cmd);
   nob_cc_output(&build_cmd, BUILD_DIR MAIN_EXE_NAME);
-  nob_cc_inputs(&build_cmd, SRC_DIR "main.c", SRC_DIR "utils.c");
+
+  for (size_t i = 0; i < src_paths.count; ++i) {
+    const char *path = src_paths.items[i];
+
+    if (strcmp(path, ".") == 0 || strcmp(path, "..") == 0)
+      continue;
+
+    char *path_real = temp_sprintf(SRC_DIR "%s", path);
+    cmd_append(&build_cmd, path_real);
+  }
 
   // Run
   cmd_append(&run_cmd, BUILD_DIR MAIN_EXE_NAME);

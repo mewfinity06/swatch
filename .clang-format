@@ -1,2 +1,4 @@
-BasedOnStyle: LLVM
+BasedOnStyle: Google
 IndentWidth: 4
+AlignConsecutiveAssignments: Consecutive
+AlignConsecutiveMacros: Consecutive
